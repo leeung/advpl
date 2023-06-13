@@ -1,0 +1,82 @@
+#include 'tlpp-core.th'
+#include 'tlpp-rest.th'
+
+namespace App.rest
+
+class Pessoa
+
+	public method New()
+
+	@Get("/pessoas")
+	public method list()
+
+	@Get("/pessoas/:id")
+	public method show()
+
+	@post("/pessoas")
+	public method create()
+
+	// @put("/pessoas/:id")
+	// public method update()
+
+	// @delete("/pessoas/:id")
+	// public method delete()
+
+ENDCLASS
+
+method New() class Pessoa
+return Self
+
+
+method list() class Pessoa
+	local nIdx := 1
+	local oJson := jsonObject():New()
+	local aPessoas := {}
+
+	for nIdx := 1 to 5
+		oPessoa := App.Entities.Pessoa():New("Leeung",'Alves','03955555555','19900820','rua c, n44 novo ancuri')
+		AAdd(aPessoas,oPessoa:toJson())
+		// AAdd(aPessoas,oPessoa:toArray())
+	next
+
+	oJson['pessoas'] := aPessoas
+	// oJson['pessoas']:set(aPessoas)
+
+	oRest:setResponse(oJson:toJson())
+return
+
+method show(id) class Pessoa
+	local oJson := jsonObject():New()
+	oJson := oRest:getPathParamsRequest()
+	FreeObj(oJson)
+
+	oJson := jsonObject():New()
+	oPessoa := App.Entities.Pessoa():New("nome pessoa",'sobre nome pessoa','000000000000','0000000','rua X, nX cidade x')
+	oJson['data'] := oPessoa:toJson()
+return oRest:setResponse(oJson:toJSON())
+
+method create() class Pessoa
+	local cBody := oRest:getBodyRequest()
+	local oJsonRequest := jsonObject():new()
+	local oJsonResponse := jsonObject():new()
+	local oPessoa := App.Entities.Pessoa():New()
+	oJsonRequest:FromJson(cBody)
+	oPessoa:cNome := oJsonRequest:getJsonValue('nome')
+	oPessoa:cSobreNome := oJsonRequest:getJsonValue('sobre_nome')
+	oPessoa:cCpf := oJsonRequest:getJsonValue('cpf')
+	oPessoa:cNascimento := oJsonRequest:getJsonValue('nascimento')
+
+	cCep := oJsonRequest:getJsonValue('cep')
+	oCep := App.Services.ViaCep():new()
+	if(oCep:cep(cCep))
+		oPessoa:cEndereco := oCep:cCep
+		oPessoa:cCidade := oCep:cCidade
+		oPessoa:cDdd := oCep:cDdd
+	else
+		oPessoa:cEndereco := oJsonRequest:getJsonValue('endereco')
+	endif
+	oJsonResponse['data'] := oPessoa:toJson()
+
+	oRest:setResponse(oJsonResponse:toJSON())
+
+return

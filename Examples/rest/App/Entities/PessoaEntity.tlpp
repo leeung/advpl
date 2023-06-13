@@ -1,0 +1,56 @@
+#include 'tlpp-core.th'
+
+namespace App.Entities
+
+/* Modelo de dados Pessoa */
+class Pessoa
+	public Data nId as integer
+	public Data cNome as character
+	public Data cSobreNome as character
+	public Data cCpf as character
+	public Data cNascimento as character
+	public Data cEndereco as character
+	public Data cCidade as character
+	public Data cDdd as character
+
+	public method new()
+	public method create(cNome, cSobreNome,cCpf,cNascimento,cEndereco)
+	public method toJson() as character
+	public method toArray() as array
+
+endclass
+
+method new() class Pessoa
+return self
+
+method create(cNome, cSobreNome,cCpf,cNascimento,cEndereco) class Pessoa
+	::nId := 0
+	::cNome = cNome
+	::cSobreNome = cSobreNome
+	::cCpf = cCpf
+	::cNascimento = cNascimento
+	::cEndereco = cEndereco
+return self
+
+method toJson() as character class Pessoa
+	oPessoaJson := jsonObject():New()
+	oPessoaJson['id'] := cValToChar(::nId)
+	oPessoaJson['nome'] := ::cNome
+	oPessoaJson['sobre_nome'] := ::cSobreNome
+	oPessoaJson['cpf'] := ::cCpf
+	oPessoaJson['data_nascimento'] := ::cNascimento
+	oPessoaJson['endereco'] := ::cEndereco
+return oPessoaJson:toJson()
+
+method toArray() as array class Pessoa
+	local aPessoa := {}
+
+	aadd(aPessoa,{'id',cvaltochar(::nId)})
+	aadd(aPessoa,{'nome',::cNome})
+	aadd(aPessoa,{'sobre_nome', ::cSobreNome})
+	aadd(aPessoa,{'cpf', ::cCpf})
+	aadd(aPessoa,{'data_nascimento', ::cNascimento})
+	aadd(aPessoa,{'endereco', ::cEndereco})
+return aPessoa
+
+

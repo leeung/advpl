@@ -1,0 +1,44 @@
+#INCLUDE'tlpp-core.th'
+
+namespace App.Services
+
+class ViaCep
+	private Data cLink as character
+
+    public Data cCep as character
+    public Data cEnd as character
+    public Data cComplemento as character
+    public Data cBairro as character
+    public Data cCidade as character
+    public Data cUf as character
+    public Data cDdd as character
+    public Data cIbge as character
+    
+	public method New()
+	public method cep(cCep as character) as logical
+
+endclass
+
+method new() class ViaCep
+	::cLink := "https://viacep.com.br/ws/"
+return self
+
+method cep(cCep as character) as logical class ViaCep
+	local oRequest := FWRest():New(::clink)
+    conout("chegou cep"+cvaltochar(cCep))
+	oRequest:setPath(cCep+"/json/")
+	if(oRequest:GET())
+		oJson := JsonObject():New()
+		oJson:FromJson(oRequest:getResult())
+        ::cCep := oJson:getJsonValue('cep')
+        ::cEnd := oJson:getJsonValue('logradouro')
+        ::cComplemento := oJson:getJsonValue('complemento')
+        ::cBairro := oJson:getJsonValue('bairro')
+        ::cCidade := oJson:getJsonValue('localidade')
+        ::cUf := oJson:getJsonValue('uf')
+        ::cDdd := oJson:getJsonValue('ddd')
+        ::cIbge := oJson:getJsonValue('ibge')
+        return .T.
+	ENDIF
+
+return .F.
